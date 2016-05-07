@@ -1,0 +1,3 @@
+include README.rst
+include wipy_tools/package_metadata.json
+include LICENSE.txt
