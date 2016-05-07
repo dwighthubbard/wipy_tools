@@ -1,0 +1,40 @@
+#!/usr/bin/env python
+import argparse
+
+from wipy_tools.telnet import console, get_config_settings, send_command
+
+if __name__ == '__main__':
+    settings = get_config_settings()
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--echo', default=False, action='store_true',
+        help='Echo the telnet session output'
+    )
+    parser.add_argument(
+        '--hostname', default=settings['hostname'],
+        help='Hostname or IP address of the wipy, default: %s' % settings['hostname']
+    )
+    subparsers = parser.add_subparsers()
+    help_parser = subparsers.add_parser('help')
+    help_parser.set_defaults(which='help')
+    console_parser = subparsers.add_parser('console')
+    console_parser.set_defaults(which='console')
+    reset_parser = subparsers.add_parser('reset')
+    reset_parser.set_defaults(which='reset')
+    command_parser = subparsers.add_parser('command')
+    command_parser.set_defaults(which='command')
+    command_parser.add_argument("command", nargs="*")
+    parser.set_defaults(which='help')
+    args = parser.parse_args()
+
+    if args.which == 'help':
+        parser.print_help()
+    elif args.which == 'command':
+        send_command(' '.join(args.command).encode(), echo=args.echo, hostname=args.hostname)
+    elif args.which == 'reset':
+        try:
+            send_command('import machine;machine.reset()', echo=args.echo, hostname=args.hostname)
+        except EOFError:
+            print('wipy restarted')
+    elif args.which == 'console':
+        console(echo=args.echo, hostname=args.hostname)
