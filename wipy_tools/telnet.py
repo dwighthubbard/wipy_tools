@@ -105,7 +105,7 @@ def send_command(command, echo=False, hostname=None):
     tn.close()
 
 
-def console(hostname, echo):
+def console(hostname=None, echo=False):
     """
     Get an interactive telnet console on the wipy
 
